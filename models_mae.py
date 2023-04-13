@@ -163,11 +163,13 @@ class MaskedAutoencoderViT(nn.Module):
         x = torch.cat((cls_tokens, x), dim=1)
 
         # apply Transformer blocks
+        attns = []
         for blk in self.blocks:
-            x = blk(x)
+            x, attn = blk(x)
+            attns.append(attn)
         x = self.norm(x)
 
-        return x, mask, ids_restore
+        return x, mask, ids_restore, attns
 
     def forward_decoder(self, x, ids_restore):
         # embed tokens
